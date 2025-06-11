@@ -1,11 +1,6 @@
-import { initializeApp } from 'firebase/app';
-import { getMessaging, onBackgroundMessage } from 'firebase/messaging/sw';
-import { precacheAndRoute } from 'workbox-precaching';
+importScripts("https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js");
+importScripts("https://www.gstatic.com/firebasejs/9.22.1/firebase-messaging-compat.js");
 
-// This is a placeholder for the precache manifest injected by VitePWA
-precacheAndRoute(self.__WB_MANIFEST || []);
-
-// Your Firebase configuration object
 const firebaseConfig = {
   apiKey: "AIzaSyBDGSFMkqgFIWnft_x1zsJeIYc4UBqXv2U",
   authDomain: "simple-pn-app.firebaseapp.com",
@@ -16,12 +11,15 @@ const firebaseConfig = {
   measurementId: "G-N9XS4K87F1"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const messaging = getMessaging(app);
+firebase.initializeApp(firebaseConfig);
 
-onBackgroundMessage(messaging, (payload) => {
-  console.log('[firebase-messaging-sw.js] Received background message ', payload);
+const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage((payload) => {
+  console.log(
+    '[firebase-messaging-sw.js] Received background message ',
+    payload
+  );
   // Customize notification here
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
