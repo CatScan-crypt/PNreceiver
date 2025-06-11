@@ -7,8 +7,11 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      srcDir: 'public',
-      filename: 'service-worker.js',
+      registerType: 'autoUpdate',
+      injectRegister: 'auto',
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'firebase-messaging-sw.js',
       manifest: {
         name: "PN Application",
         short_name: "PN",
