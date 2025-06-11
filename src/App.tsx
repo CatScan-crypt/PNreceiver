@@ -6,16 +6,9 @@ import { requestPermission } from './firebase';
 
 function App() {
   const [count, setCount] = useState(0)
-  const [fcmToken, setFcmToken] = useState<string | null>(null);
-  const [permission] = useState<string>('');
 
   useEffect(() => {
-    requestPermission().then(token => {
-      setFcmToken(token);
-      if (token) {
-        console.log('FCM Token:', token);
-      }
-    });
+    requestPermission();
   }, []);
 
   return (
@@ -36,10 +29,6 @@ function App() {
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
-        <div style={{ marginTop: '1em', wordBreak: 'break-all' }}>
-          <strong>Notification Permission:</strong> {permission}<br />
-          <strong>FCM Token:</strong> {fcmToken ? fcmToken : 'Fetching...'}
-        </div>
       </div>
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
