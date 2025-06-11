@@ -24,23 +24,16 @@ console.log('Firebase messaging initialized:', messaging);
 
 export const requestPermission = async () => {
   try {
-    console.log('Checking service worker registration...');
-    const registration = await navigator.serviceWorker.ready;
-    if (!registration) {
-      console.error('Service worker not registered');
-      return null;
-    }
-    console.log('Service worker registered:', registration.scope);
-
     console.log('Requesting notification permission...');
     const permission = await Notification.requestPermission();
     console.log('Notification permission:', permission);
 
     if (permission === 'granted') {
       console.log('Getting FCM token...');
+      // The vapidKey is passed here to identify this client to the push service.
+      // The service worker is automatically detected by Firebase.
       const token = await getToken(messaging, {
         vapidKey: 'BIdZ61VNPIeuYs0mJBa5pd8kAjxGX0_MHBnnFRm9UAqhFIbal3205U5SOxahq7rLtvu8pr56VTlnL-snDuJbqzk',
-        serviceWorkerRegistration: registration
       });
 
       console.log('FCM token:', token);

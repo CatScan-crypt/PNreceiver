@@ -8,13 +8,11 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-        importScripts: ['firebase-messaging-sw.js'],
-      },
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.js',
       devOptions: {
         enabled: true,
-        type: 'module',
       },
       manifest: {
         name: "PN Application",
