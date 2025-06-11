@@ -32,6 +32,32 @@ export const requestPermission = async () => {
       console.log('Registering service worker for FCM...');
       const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
       console.log('Service worker registered:', registration);
+
+      // Wait for the service worker to be active
+      let serviceWorker: ServiceWorker | null = null;
+      if (registration.installing) {
+        serviceWorker = registration.installing;
+      } else if (registration.waiting) {
+        serviceWorker = registration.waiting;
+      } else if (registration.active) {
+        serviceWorker = registration.active;
+      }
+
+      if (serviceWorker) {
+        await new Promise<void>((resolve) => {
+          if (serviceWorker!.state === 'activated') {
+            resolve();
+          } else {
+            serviceWorker!.addEventListener('statechange', function listener(_e: Event) {
+              if (serviceWorker!.state === 'activated') {
+                serviceWorker!.removeEventListener('statechange', listener);
+                resolve();
+              }
+            });
+          }
+        });
+      }
+
       console.log('Getting FCM token...');
       const token = await getToken(messaging, {
         vapidKey: 'BIdZ61VNPIeuYs0mJBa5pd8kAjxGX0_MHBnnFRm9UAqhFIbal3205U5SOxahq7rLtvu8pr56VTlnL-snDuJbqzk',
