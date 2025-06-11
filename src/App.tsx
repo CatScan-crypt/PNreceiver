@@ -7,7 +7,7 @@ import { requestPermission } from './firebase';
 function App() {
   const [count, setCount] = useState(0)
   const [fcmToken, setFcmToken] = useState<string | null>(null);
-  const [permission, setPermission] = useState<string>('');
+  const [permission] = useState<string>('');
 
   useEffect(() => {
     requestPermission().then(token => {
@@ -16,7 +16,6 @@ function App() {
         console.log('FCM Token:', token);
       }
     });
-    Notification.requestPermission().then(setPermission);
   }, []);
 
   return (
