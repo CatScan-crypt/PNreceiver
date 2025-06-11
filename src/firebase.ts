@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+import { getMessaging, onMessage } from 'firebase/messaging';
 import type { MessagePayload } from 'firebase/messaging';
 
 const firebaseConfig = {
