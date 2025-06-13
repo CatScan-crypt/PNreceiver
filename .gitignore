@@ -25,3 +25,4 @@ dist-ssr
 .vite
 dev-dist
 .env
+.vercel
