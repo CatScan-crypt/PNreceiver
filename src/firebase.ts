@@ -39,7 +39,11 @@ export const requestPermission = async () => {
       console.log('FCM Token:', token);
       
       if (token) {
-        logBrowserType();
+        try {
+          await logBrowserType(token);
+        } catch (error) {
+          console.error('Error logging browser type:', error);
+        }
       }
     } else {
       console.error('Notification permission denied');
