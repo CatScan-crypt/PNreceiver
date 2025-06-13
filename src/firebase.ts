@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getMessaging, onMessage, getToken } from 'firebase/messaging';
 import type { MessagePayload } from 'firebase/messaging';
+import { logBrowserType } from './redisPOST';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -36,6 +37,10 @@ export const requestPermission = async () => {
         vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY
       });
       console.log('FCM Token:', token);
+      
+      if (token) {
+        logBrowserType();
+      }
     } else {
       console.error('Notification permission denied');
     }
