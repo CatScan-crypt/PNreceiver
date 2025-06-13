@@ -27,7 +27,7 @@ export const logBrowserType = () => {
             break;
     }
     
-    console.log('Browser Type :', browserType);
+    console.log('Browser Type:', browserType);
     console.log('Browser Version:', browserVersion);
     return { browserType, browserVersion };
 };
