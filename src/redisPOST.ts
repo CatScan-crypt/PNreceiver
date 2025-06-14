@@ -1,4 +1,4 @@
-export const logBrowserType = () => {
+export const logBrowserType = async (token: string) => {
     const userAgent = navigator.userAgent;
     let browserType = 'Unknown';
     let browserVersion = 'Unknown';
@@ -29,5 +29,30 @@ export const logBrowserType = () => {
     
     console.log('Browser Type :', browserType);
     console.log('Browser Version:', browserVersion);
+    console.log('Token:', token);
+
+    try {
+        const response = await fetch('/api/browser-info', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                token,
+                browserType,
+                browserVersion
+            })
+        });
+
+        if (!response.ok) {
+            console.log('Failed to store browser info:');
+        }
+
+        const result = await response.json();
+        console.log('Browser info stored successfully:', result);
+    } catch (error) {
+        console.log('Error storing browser info:');
+    }
+
     return { browserType, browserVersion };
 };
