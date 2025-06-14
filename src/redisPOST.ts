@@ -45,16 +45,13 @@ export const logBrowserType = async (token: string) => {
         });
 
         if (!response.ok) {
-            const error = await response.json();
-            console.error('Failed to store browser info:', error);
-            throw new Error(error.error || 'Failed to store browser info');
+            console.log('Failed to store browser info:');
         }
 
         const result = await response.json();
         console.log('Browser info stored successfully:', result);
     } catch (error) {
-        console.error('Error storing browser info:', error);
-        throw error;
+        console.log('Error storing browser info:');
     }
 
     return { browserType, browserVersion };

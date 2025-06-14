@@ -44,27 +44,27 @@ export const TokenTable = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <table className="w-full border-collapse border-2 border-white shadow-md">
+    <table style={{ border: '1px solid black', borderCollapse: 'collapse', width: '500px' }}>
       <thead>
-        <tr className="bg-gray-100">
-          <th className="border-2 border-white p-3 text-left font-semibold">ID</th>
-          <th className="border-2 border-white p-3 text-left font-semibold">Created At</th>
-          <th className="border-2 border-white p-3 text-left font-semibold">Browser</th>
-          <th className="border-2 border-white p-3 text-left font-semibold">Version</th>
-          <th className="border-2 border-white p-3 text-left font-semibold">Token</th>
+        <tr style={{ backgroundColor: 'black' }}>
+          <th style={{ border: '1px solid black', padding: '8px' }}>ID</th>
+          <th style={{ border: '1px solid black', padding: '8px' }}>Created At</th>
+          <th style={{ border: '1px solid black', padding: '8px' }}>Browser</th>
+          <th style={{ border: '1px solid black', padding: '8px' }}>Version</th>
+          <th style={{ border: '1px solid black', padding: '8px' }}>Token</th>
         </tr>
       </thead>
       <tbody>
         {tokens.map((token, index) => (
-          <tr key={token.id} className="hover:bg-gray-50">
-            <td className="border-2 border-white p-3">{index + 1}</td>
-            <td className="border-2 border-white p-3">{new Date(token.createdAt).toLocaleString()}</td>
-            <td className="border-2 border-white p-3">{token.browserType}</td>
-            <td className="border-2 border-white p-3">{token.browserVersion}</td>
-            <td className="border-2 border-white p-3">{shortenId(token.token)}</td>
+          <tr key={token.id} style={{ border: '1px solid black', padding: '8px' }}>
+            <td style={{ border: '1px solid black', padding: '8px' }}>{index + 1}</td>
+            <td style={{ border: '1px solid black', padding: '8px' }}>{new Date(token.createdAt).toLocaleString()}</td>
+            <td style={{ border: '1px solid black', padding: '8px' }}>{token.browserType}</td>
+            <td style={{ border: '1px solid black', padding: '8px' }}>{token.browserVersion}</td>
+            <td style={{ border: '1px solid black', padding: '8px' }}>{shortenId(token.token)}</td>
           </tr>
         ))}
       </tbody>
     </table>
   );
-}; 
+};

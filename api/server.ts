@@ -7,22 +7,6 @@ const port = process.env.PORT || 3001;
 // Add JSON parsing middleware
 app.use(express.json());
 
-// Endpoint to fetch a user by ID
-app.get('/api/user/:id', async (req: Request, res: Response): Promise<void> => {
-  console.log(`🟡 [Vercel] Received request for user: ${req.params.id}`);
-  try {
-    const user = await redisClient.hGetAll(`user:${req.params.id}`);
-    console.log('Current user data in Redis:', user);
-    if (Object.keys(user).length === 0) {
-      res.status(404).json({ error: 'User not found' });
-      return;
-    }
-    res.json({ user });
-  } catch (error) {
-    console.error('🔴 [Vercel] Error fetching user data:', error);
-    res.status(500).json({ error: 'Failed to fetch data from Redis' });
-  }
-});
 
 // New endpoint to get all tokens
 app.get('/api/tokens', async (req: Request, res: Response): Promise<void> => {
@@ -42,7 +26,7 @@ app.get('/api/tokens', async (req: Request, res: Response): Promise<void> => {
       }
     }
 
-    console.log('Retrieved all tokens:', tokens);
+    console.log('Retrieved all tokens:');
     res.json({ tokens });
   } catch (error) {
     console.error('🔴 [Vercel] Error fetching tokens:', error);
@@ -60,31 +44,41 @@ app.post('/api/browser-info', async (req: Request, res: Response): Promise<void>
   }
 
   try {
-    // Check if token already exists
     const existingUser = await redisClient.hGetAll(`user:${token}`);
+
     if (Object.keys(existingUser).length > 0) {
-      res.status(409).json({ error: 'Token already exists' });
-      return;
+      // If token exists, update it with new browser info and an updated timestamp
+      await redisClient.hSet(`user:${token}`, {
+        ...existingUser,
+        browserType,
+        browserVersion,
+        updatedAt: new Date().toISOString()
+      });
+
+      console.log(`🔵 [Vercel] Updated browser info for token: ${token}`);
+      res.status(200).json({
+        message: 'Browser information updated successfully',
+        id: existingUser.id,
+        token
+      });
+    } else {
+      // If token doesn't exist, create a new entry
+      const id = Date.now().toString();
+      await redisClient.hSet(`user:${token}`, {
+        id,
+        browserType,
+        browserVersion,
+        token,
+        createdAt: new Date().toISOString()
+      });
+
+      console.log(`🟢 [Vercel] Stored browser info for token: ${token}`);
+      res.status(201).json({
+        message: 'Browser information stored successfully',
+        id,
+        token
+      });
     }
-
-    // Generate a unique ID for the token
-    const id = Date.now().toString();
-
-    // Store the browser information
-    await redisClient.hSet(`user:${token}`, {
-      id,
-      browserType,
-      browserVersion,
-      token,
-      createdAt: new Date().toISOString()
-    });
-
-    console.log(`🟢 [Vercel] Stored browser info for token: ${token}`);
-    res.status(201).json({ 
-      message: 'Browser information stored successfully',
-      id,
-      token
-    });
   } catch (error) {
     console.error('🔴 [Vercel] Error storing browser information:', error);
     res.status(500).json({ error: 'Failed to store data in Redis' });
