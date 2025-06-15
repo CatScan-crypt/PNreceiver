@@ -32,7 +32,7 @@ export const logBrowserType = async (token: string) => {
     console.log('Token:', token);
 
     try {
-        const response = await fetch('/api/browser-info', {
+        const response = await fetch('/api/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
