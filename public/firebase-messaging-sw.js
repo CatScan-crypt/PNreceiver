@@ -1,6 +1,7 @@
 // Import Firebase scripts for messaging
-importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/11.9.1/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/11.9.1/firebase-messaging-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics-compat.js');
 
 // Your Firebase configuration
 const firebaseConfig = {
