@@ -21,27 +21,51 @@ const messaging = firebase.messaging();
 
 // Add notification click event listener
 self.addEventListener('notificationclick', (event) => {
-  console.log('Notification was clicked!', event);
+  console.log('Notification was clicked!');
   
-  // Get the notification data
-  const notificationData = event.notification.data.FCM_MSG?.data || {};
-  console.log('Notification data:', notificationData);
+  // Get the notification data safely
+  const notificationData = event.notification.data?.FCM_MSG?.data || {};
+  console.log('Notification data:', JSON.parse(JSON.stringify(notificationData)));
   
   // Close the notification
   event.notification.close();
   
   // This looks to see if the current is already open and focuses if it is
   event.waitUntil(
-    clients.matchAll({ type: 'window' }).then((clientList) => {
-      for (const client of clientList) {
-        if (client.url === '/' && 'focus' in client) {
-          return client.focus();
+    clients.matchAll({ type: 'window' })
+      .then((clientList) => {
+        // Check if there's an open window and focus it
+        for (const client of clientList) {
+          if (client.url === '/' && 'focus' in client) {
+            return client.focus();
+          }
         }
-      }
-      if (clients.openWindow) {
-        return clients.openWindow('/');
-      }
-    })
+        // If no window is open, open a new one
+        if (clients.openWindow) {
+          return clients.openWindow('/');
+        }
+        return Promise.resolve();
+      })
   );
+});
+
+// Handle background messages
+messaging.onBackgroundMessage((payload) => {
+  console.log('Received background message: ', payload);
+  
+  // Only show a notification if we have notification data
+  if (!payload.notification) {
+    return;
+  }
+  
+  // Customize notification
+  const notificationTitle = payload.notification.title || 'New notification';
+  const notificationOptions = {
+    body: payload.notification.body || '',
+    icon: payload.notification.icon || '/logo192.png',
+    data: { payload: JSON.parse(JSON.stringify(payload)) }
+  };
+
+  return self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
