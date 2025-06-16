@@ -2,8 +2,6 @@ import { initializeApp } from 'firebase/app';
 import { getMessaging, onMessage, getToken } from 'firebase/messaging';
 import type { MessagePayload } from 'firebase/messaging';
 import { logBrowserType } from './redisPOST';
-import { getAnalytics, logEvent } from "firebase/analytics";
-
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -22,9 +20,6 @@ console.log('Firebase app initialized:', app.name);
 // Initialize Firebase Messaging
 const messaging = getMessaging(app);
 console.log('Firebase messaging initialized:', messaging);
-
-const analytics = getAnalytics(app);
-logEvent(analytics, 'notification_open');
 
 export const requestPermission = async () => {
   try {
