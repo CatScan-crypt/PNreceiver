@@ -4,13 +4,13 @@ importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-com
 
 // Your Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBDGSFMkqgFIWnft_x1zsJeIYc4UBqXv2U",
-  authDomain: "simple-pn-app.firebaseapp.com",
-  projectId: "simple-pn-app",
-  storageBucket: "simple-pn-app.firebasestorage.app",
-  messagingSenderId: "884393039065",
-  appId: "1:884393039065:web:83735c43d61c8b24295ac8",
-  measurementId: "G-N9XS4K87F1"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID 
 };
 
 // Initialize Firebase

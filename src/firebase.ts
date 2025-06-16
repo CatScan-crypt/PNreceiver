@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getMessaging, onMessage, getToken } from 'firebase/messaging';
+import { getAnalytics } from 'firebase/analytics'; // ✅ Import analytics
 import type { MessagePayload } from 'firebase/messaging';
 import { logBrowserType } from './redisPOST';
 
@@ -10,14 +11,18 @@ const firebaseConfig = {
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID // ✅ Needed for analytics
 };
 
-// Initialize Firebase
+// ✅ Initialize Firebase
 const app = initializeApp(firebaseConfig);
 console.log('Firebase app initialized:', app.name);
 
-// Initialize Firebase Messaging
+// ✅ Initialize Firebase Analytics
+const analytics = getAnalytics(app); // This enables notification_open tracking
+console.log('Firebase analytics initialized:', analytics);
+
+// ✅ Initialize Firebase Messaging
 const messaging = getMessaging(app);
 console.log('Firebase messaging initialized:', messaging);
 
@@ -31,13 +36,15 @@ export const requestPermission = async () => {
       console.log('Registering service worker for FCM...');
       const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
       console.log('Service worker registered:', registration);
-      
-      // Get FCM token
+
+      // ✅ Get FCM token
       const token = await getToken(messaging, {
-        vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY
+        vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
+        serviceWorkerRegistration: registration, // ✅ Make sure it uses your registered SW
       });
+
       console.log('FCM Token:', token);
-      
+
       if (token) {
         try {
           await logBrowserType(token);
@@ -54,11 +61,14 @@ export const requestPermission = async () => {
       console.error('Error details:', {
         name: error.name,
         message: error.message,
-        stack: error.stack
+        stack: error.stack,
       });
     }
   }
+
   return null;
 };
 
-export const onMessageListener = (callback: (payload: MessagePayload) => void) => onMessage(messaging, callback);
+// ✅ Handle foreground messages
+export const onMessageListener = (callback: (payload: MessagePayload) => void) =>
+  onMessage(messaging, callback);
