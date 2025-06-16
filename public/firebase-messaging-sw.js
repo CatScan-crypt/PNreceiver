@@ -23,48 +23,30 @@ const messaging = firebase.messaging();
 self.addEventListener('notificationclick', (event) => {
   console.log('Notification was clicked!', event);
   
-  // Get the notification data and URL to open
-  const fcmMsg = event.notification.data?.FCM_MSG;
-  let urlToOpen = fcmMsg?.data?.url || fcmMsg?.notification?.click_action || event.notification.data?.url;
+  const notification = event.notification;
+  const data = notification.data || {};
+  const fcmMsg = data.FCM_MSG || {};
 
-  if (!urlToOpen) {
-    const payload = event.notification.data;
-    for (const key in payload) {
-        if (typeof payload[key] === 'string' && (payload[key].startsWith('http') || payload[key].startsWith('/'))) {
-            urlToOpen = payload[key];
-            break;
-        }
-    }
-  }
+  // Try to find the link in various common places from the FCM payload
+  const link = fcmMsg?.data?.link || 
+               fcmMsg?.notification?.click_action || 
+               data.link;
 
-  urlToOpen = new URL(urlToOpen || '/', self.location.origin).href;
-  
-  console.log('Notification data:', event.notification.data);
-  console.log('URL to open:', urlToOpen);
-  
+  console.log('Raw notification data:', data);
+  console.log('Extracted link:', link);
+
   // Close the notification
-  event.notification.close();
-  
-  // This looks to see if the current is already open and focuses if it is
-  event.waitUntil(
-    clients.matchAll({ type: 'window' }).then((clientList) => {
-      // Check if there's a matching client
-      for (const client of clientList) {
-        const clientUrl = new URL(client.url);
-        const targetUrl = new URL(urlToOpen);
-        
-        // Compare origin and pathname, ignoring query parameters and hash
-        if (clientUrl.origin === targetUrl.origin && 
-            clientUrl.pathname === targetUrl.pathname) {
-          console.log('Found matching client, focusing:', client.url);
-          return client.focus();
-        }
-      }
-      
-      // If no matching client is found, open a new window
-      console.log('No matching client found, opening new window');
-      return clients.openWindow(urlToOpen);
-    })
-  );
+  notification.close();
+
+  // If a link is found, open it in a new window.
+  if (link) {
+    const urlToOpen = new URL(link, self.location.origin).href;
+    console.log('Attempting to open window:', urlToOpen);
+    
+    const promiseChain = clients.openWindow(urlToOpen);
+    event.waitUntil(promiseChain);
+  } else {
+    console.log('No link found in notification data. Cannot open a window.');
+  }
 });
 
