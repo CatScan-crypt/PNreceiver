@@ -23,9 +23,12 @@ const messaging = firebase.messaging();
 self.addEventListener('notificationclick', (event) => {
   console.log('Notification was clicked!', event);
   
-  // Get the notification data
-  const notificationData = event.notification.data.FCM_MSG?.data || {};
+  // Get the notification data and URL to open
+  const notificationData = event.notification.data?.FCM_MSG?.data || {};
+  const urlToOpen = new URL(notificationData.url || '/', self.location.origin).href;
+  
   console.log('Notification data:', notificationData);
+  console.log('URL to open:', urlToOpen);
   
   // Close the notification
   event.notification.close();
@@ -33,14 +36,22 @@ self.addEventListener('notificationclick', (event) => {
   // This looks to see if the current is already open and focuses if it is
   event.waitUntil(
     clients.matchAll({ type: 'window' }).then((clientList) => {
+      // Check if there's a matching client
       for (const client of clientList) {
-        if (client.url === '/' && 'focus' in client) {
+        const clientUrl = new URL(client.url);
+        const targetUrl = new URL(urlToOpen);
+        
+        // Compare origin and pathname, ignoring query parameters and hash
+        if (clientUrl.origin === targetUrl.origin && 
+            clientUrl.pathname === targetUrl.pathname) {
+          console.log('Found matching client, focusing:', client.url);
           return client.focus();
         }
       }
-      if (clients.openWindow) {
-        return clients.openWindow('/');
-      }
+      
+      // If no matching client is found, open a new window
+      console.log('No matching client found, opening new window');
+      return clients.openWindow(urlToOpen);
     })
   );
 });
