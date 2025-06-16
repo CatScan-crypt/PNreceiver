@@ -65,4 +65,28 @@ export const requestPermission = async () => {
   return null;
 };
 
-export const onMessageListener = (callback: (payload: MessagePayload) => void) => onMessage(messaging, callback);
+// Handle foreground messages
+export const onMessageListener = (callback: (payload: MessagePayload) => void) => {
+  return onMessage(messaging, (payload) => {
+    console.log('Received foreground message: ', payload);
+    // Only process the message if the app is in the foreground
+    if (document.visibilityState === 'visible') {
+      callback(payload);
+    }
+  });
+};
+
+// Initialize message listener for foreground messages
+onMessageListener((payload) => {
+  // This will only be called when the app is in the foreground
+  console.log('Handling foreground message:', payload);
+  // You can add your foreground notification handling logic here
+  // For example, show a toast notification
+  if (payload.notification) {
+    const { title, body } = payload.notification;
+    new Notification(title || 'New notification', {
+      body,
+      icon: '/logo192.png'
+    });
+  }
+});
