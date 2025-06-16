@@ -53,38 +53,19 @@ self.addEventListener('notificationclick', (event) => {
 messaging.onBackgroundMessage((payload) => {
   console.log('Received background message: ', payload);
   
-  // Only show a notification if we have notification data and the app is in the background
+  // Only show a notification if we have notification data
   if (!payload.notification) {
-    console.log('No notification data in payload');
     return;
   }
-  
-  // Skip if this is a duplicate message
-  if (payload.data?._duplicate) {
-    console.log('Skipping duplicate message');
-    return;
-  }
-  
-  // Mark as duplicate to prevent double processing
-  payload.data = { ...payload.data, _duplicate: true };
   
   // Customize notification
   const notificationTitle = payload.notification.title || 'New notification';
   const notificationOptions = {
     body: payload.notification.body || '',
     icon: payload.notification.icon || '/logo192.png',
-    data: { 
-      ...payload.data,
-      FCM_MSG: {
-        ...payload,
-        data: { ...payload.data }
-      }
-    },
-    requireInteraction: true,
-    tag: payload.messageId || Date.now().toString() // Use messageId or timestamp as a unique tag
+    data: { payload: JSON.parse(JSON.stringify(payload)) }
   };
 
-  console.log('Showing notification:', notificationTitle, notificationOptions);
   return self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
