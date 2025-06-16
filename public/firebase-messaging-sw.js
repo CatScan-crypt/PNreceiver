@@ -24,10 +24,22 @@ self.addEventListener('notificationclick', (event) => {
   console.log('Notification was clicked!', event);
   
   // Get the notification data and URL to open
-  const notificationData = event.notification.data?.FCM_MSG?.data || {};
-  const urlToOpen = new URL(notificationData.url || '/', self.location.origin).href;
+  const fcmMsg = event.notification.data?.FCM_MSG;
+  let urlToOpen = fcmMsg?.data?.url || fcmMsg?.notification?.click_action || event.notification.data?.url;
+
+  if (!urlToOpen) {
+    const payload = event.notification.data;
+    for (const key in payload) {
+        if (typeof payload[key] === 'string' && (payload[key].startsWith('http') || payload[key].startsWith('/'))) {
+            urlToOpen = payload[key];
+            break;
+        }
+    }
+  }
+
+  urlToOpen = new URL(urlToOpen || '/', self.location.origin).href;
   
-  console.log('Notification data:', notificationData);
+  console.log('Notification data:', event.notification.data);
   console.log('URL to open:', urlToOpen);
   
   // Close the notification
