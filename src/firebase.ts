@@ -37,10 +37,13 @@ export const requestPermission = async () => {
       const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
       console.log('Service worker registered:', registration);
 
-      // ✅ Get FCM token
+      // Wait for the Service Worker to be active
+      await navigator.serviceWorker.ready;
+
+      // Get FCM token
       const token = await getToken(messaging, {
         vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
-        serviceWorkerRegistration: registration, // ✅ Make sure it uses your registered SW
+        serviceWorkerRegistration: registration,
       });
 
       console.log('FCM Token:', token);
