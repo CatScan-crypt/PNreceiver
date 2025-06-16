@@ -20,33 +20,23 @@ firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
 // Add notification click event listener
-self.addEventListener('notificationclick', (event) => {
-  console.log('Notification was clicked!', event);
-  
-  const notification = event.notification;
-  const data = notification.data || {};
-  const fcmMsg = data.FCM_MSG || {};
+self.addEventListener("notificationclick", (event) => {
+  console.log("On notification click: ", event.notification.tag);
+  event.notification.close();
 
-  // Try to find the link in various common places from the FCM payload
-  const link = fcmMsg?.data?.link || 
-               fcmMsg?.notification?.click_action || 
-               data.link;
-
-  console.log('Raw notification data:', data);
-  console.log('Extracted link:', link);
-
-  // Close the notification
-  notification.close();
-
-  // If a link is found, open it in a new window.
-  if (link) {
-    const urlToOpen = new URL(link, self.location.origin).href;
-    console.log('Attempting to open window:', urlToOpen);
-    
-    const promiseChain = clients.openWindow(urlToOpen);
-    event.waitUntil(promiseChain);
-  } else {
-    console.log('No link found in notification data. Cannot open a window.');
-  }
+  // This looks to see if the current is already open and
+  // focuses if it is
+  event.waitUntil(
+    clients
+      .matchAll({
+        type: "window",
+      })
+      .then((clientList) => {
+        for (const client of clientList) {
+          if (client.url === "/" && "focus" in client) return client.focus();
+        }
+        if (clients.openWindow) return clients.openWindow("/");
+      }),
+  );
 });
 
