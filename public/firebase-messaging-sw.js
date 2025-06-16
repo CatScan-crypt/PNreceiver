@@ -30,4 +30,14 @@ messaging.onBackgroundMessage(function(payload) {
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
+});messaging.onBackgroundMessage(function(payload) {
+  console.log('[firebase-messaging-sw.js] Received background message ', payload);
+  // Customize notification here
+  const notificationTitle = payload.notification.title || 'Background Message Title';
+  const notificationOptions = {
+    body: payload.notification.body || 'Background Message body.',
+    icon: payload.notification.icon || '/firebase-logo.png'
+  };
+
+  self.registration.showNotification(notificationTitle, notificationOptions);
 });
