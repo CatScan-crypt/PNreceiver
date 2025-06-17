@@ -19,13 +19,33 @@ function App() {
     }
   };
 
+  const handleClearData = async () => {
+    try {
+      // Unregister service worker
+      const registration = await navigator.serviceWorker.getRegistration();
+      if (registration) {
+        await registration.unregister();
+      }
+
+      // Clear any local storage data
+      localStorage.clear();
+
+      // Reset states
+      setIsRegistered(false);
+      
+      console.log('Local data cleared successfully');
+    } catch (error) {
+      console.error('Error clearing data:', error);
+    }
+  };
+
   return (
     <div className="p-4">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-bold text-black-900">PNreceiver</h1>
       </div>
       
-      <div className="mb-6">
+      <div className="mb-6 flex gap-4">
         <button
           onClick={handleRegister}
           disabled={isRegistering || isRegistered}
@@ -42,6 +62,18 @@ function App() {
             : isRegistered 
               ? 'Registered for Notifications!'
               : 'Register for Notifications'}
+        </button>
+
+        <button
+          onClick={handleClearData}
+          disabled={!isRegistered}
+          className={`px-4 py-2 rounded-md text-white font-medium ${
+            !isRegistered
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-red-500 hover:bg-red-600'
+          }`}
+        >
+          Clear Local Data
         </button>
       </div>
       

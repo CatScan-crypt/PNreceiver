@@ -29,7 +29,7 @@ export const requestPermission = async () => {
 
     if (permission === 'granted') {
       console.log('Registering service worker for FCM...');
-      const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+      const registration = await navigator.serviceWorker.register('/custom-sw.js');
       console.log('Service worker registered:', registration);
       
       // Wait for the Service Worker to be active
@@ -66,3 +66,12 @@ export const requestPermission = async () => {
 };
 
 export const onMessageListener = (callback: (payload: MessagePayload) => void) => onMessage(messaging, callback);
+
+// Listen for notification close events from service worker
+export const onNotificationCloseListener = (callback: (tag: string) => void) => {
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'NOTIFICATION_CLOSED') {
+      callback(event.data.tag);
+    }
+  });
+};
