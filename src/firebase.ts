@@ -21,6 +21,25 @@ console.log('Firebase app initialized:', app.name);
 const messaging = getMessaging(app);
 console.log('Firebase messaging initialized:', messaging);
 
+export const checkNotificationRegistration = async (): Promise<boolean> => {
+  try {
+    // Check if service worker is registered
+    const registration = await navigator.serviceWorker.getRegistration();
+    if (!registration) return false;
+
+    // Check if we have a valid FCM token
+    const token = await getToken(messaging, {
+      vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
+      serviceWorkerRegistration: registration
+    });
+
+    return !!token;
+  } catch (error) {
+    console.error('Error checking notification registration:', error);
+    return false;
+  }
+};
+
 export const requestPermission = async () => {
   try {
     console.log('Requesting notification permission...');
@@ -67,11 +86,4 @@ export const requestPermission = async () => {
 
 export const onMessageListener = (callback: (payload: MessagePayload) => void) => onMessage(messaging, callback);
 
-// Listen for notification close events from service worker
-export const onNotificationCloseListener = (callback: (tag: string) => void) => {
-  navigator.serviceWorker.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'NOTIFICATION_CLOSED') {
-      callback(event.data.tag);
-    }
-  });
-};
+
