@@ -5,6 +5,7 @@ import RegisterButton from './components/RegisterButton';
 
 function App() {
   const [isRegistered, setIsRegistered] = useState(false);
+  const [key, setKey] = useState(0);
 
   return (
     <div className="p-4">
@@ -14,12 +15,16 @@ function App() {
       
       <div className="mb-6 flex gap-4">
         <RegisterButton
+          key={key}
           onRegisterStateChange={setIsRegistered}
         />
 
         <ClearDataButton 
           isRegistered={isRegistered}
-          onClearDataComplete={() => setIsRegistered(false)}
+          onClearDataComplete={() => {
+            setIsRegistered(false);
+            setKey(prev => prev + 1);
+          }}
         />
       </div>
       
