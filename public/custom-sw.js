@@ -15,6 +15,7 @@ self.addEventListener('push', (event) => {
       body: data.body || data.notification?.body,
       icon: data.icon || data.notification?.icon,
       badge: data.badge || data.notification?.badge,
+      
       data: {
         ...data.data,
         link: data.fcmOptions?.link || '/'
@@ -33,11 +34,13 @@ self.addEventListener('push', (event) => {
 // Handle notification click
 self.addEventListener('notificationclick', (event) => {
   console.log('Notification clicked');
+  console.log('payload', event);
   event.notification.close();
 
   if (event.action) {
     // Handle custom actions if any
     console.log('Action clicked:', event.action);
+    
   } else {
     // Default click behavior
     const urlToOpen = event.notification.data?.link || '/';
