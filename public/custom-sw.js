@@ -16,7 +16,7 @@ self.addEventListener('push', (event) => {
     console.log(":asf", data)
     const options = {
       body:  data.notification?.body,
-      icon:  data.notification?.icon,
+      icon:  data.notification?.image,
       badge: data.notification?.badge,
       image: data.notification?.image,
       
