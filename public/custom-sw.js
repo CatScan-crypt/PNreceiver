@@ -1,14 +1,47 @@
-// Import Firebase scripts for messaging
+// Handle push notification
+self.addEventListener('push', (event) => {
+  if (event.data) {
+    let data;
+    try {
+      data = event.data.json();
+    } catch (e) {
+      data = {
+        title: 'New Notification',
+        body: event.data.text(),
+        image: event.data.text()
+      };
+    }
+
+    const options = {
+      body: data.body || data.notification?.body,
+      icon: data.icon || data.notification?.icon,
+      badge: data.badge || data.notification?.badge,
+      image: 'https://images.rawpixel.com/image_png_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvdjEwNDktMjIucG5n.png',
+
+      data: {
+        ...data.data,
+        link: data.fcmOptions?.link || '/'
+      },
+      actions: data.actions || data.notification?.actions || [],
+      requireInteraction: true,
+      vibrate: [200, 100, 200]
+    };
+
+    event.waitUntil(
+      self.registration.showNotification(data, options)
+    );
+  }
+});
+
 // Handle notification click
 self.addEventListener('notificationclick', (event) => {
+  console.log(event);
   console.log('Notification clicked');
-  console.log('payload', event);
   event.notification.close();
 
   if (event.action) {
     // Handle custom actions if any
     console.log('Action clicked:', event.action);
-    
   } else {
     // Default click behavior
     const urlToOpen = event.notification.data?.link || '/';
@@ -35,37 +68,6 @@ self.addEventListener('notificationclick', (event) => {
 self.addEventListener('notificationclose', (event) => {
     console.log('Notification closed:', event.notification.tag);
   });
+
+
   
-importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
-
-// Your Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyBDGSFMkqgFIWnft_x1zsJeIYc4UBqXv2U",
-  authDomain: "simple-pn-app.firebaseapp.com",
-  projectId: "simple-pn-app",
-  storageBucket: "simple-pn-app.firebasestorage.app",
-  messagingSenderId: "884393039065",
-  appId: "1:884393039065:web:83735c43d61c8b24295ac8",
-  measurementId: "G-N9XS4K87F1"
-};
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-
-// Retrieve Firebase Messaging instance
-const messaging = firebase.messaging();
-
-// Handle background messages
-messaging.onBackgroundMessage(function(payload) {
-  console.log('[firebase-messaging-sw.js] Received background message ', payload);
-  // Customize notification here
-  const notificationTitle = payload.notification.title || 'Background Message Title';
-  const notificationOptions = {
-    body: payload.notification.body || 'Background Message body.',
-    icon: payload.notification.icon || '/firebase-logo.png'
-  };
-
-  self.registration.showNotification(notificationTitle, notificationOptions);
-});
-
