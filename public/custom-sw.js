@@ -1,6 +1,8 @@
 // Handle push notification
 self.addEventListener('push', (event) => {
+  
   if (event.data) {
+    
     let data;
     try {
       data = event.data.json();
@@ -8,16 +10,16 @@ self.addEventListener('push', (event) => {
       data = {
         title: 'New Notification',
         body: event.data.text(),
-        image: event.data.text()
+        image: event.data.image
       };
     }
-
+    console.log(":asf", data)
     const options = {
-      body: data.body || data.notification?.body,
-      icon: data.icon || data.notification?.icon,
-      badge: data.badge || data.notification?.badge,
-      image: 'https://images.rawpixel.com/image_png_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvdjEwNDktMjIucG5n.png',
-
+      body:  data.notification?.body,
+      icon:  data.notification?.icon,
+      badge: data.notification?.badge,
+      image: data.notification?.image,
+      
       data: {
         ...data.data,
         link: data.fcmOptions?.link || '/'
@@ -28,7 +30,7 @@ self.addEventListener('push', (event) => {
     };
 
     event.waitUntil(
-      self.registration.showNotification(data, options)
+      self.registration.showNotification(data.title || data.notification?.title || 'New Notification', options)
     );
   }
 });
@@ -68,6 +70,3 @@ self.addEventListener('notificationclick', (event) => {
 self.addEventListener('notificationclose', (event) => {
     console.log('Notification closed:', event.notification.tag);
   });
-
-
-  
