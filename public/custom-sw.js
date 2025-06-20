@@ -12,7 +12,7 @@ self.addEventListener('push', (event) => {
         body: event.data.text(),
         image: event.data.image
       };
-    }
+    } 
     console.log(":asf", data)
     const options = {
       body:  data.notification?.body,
