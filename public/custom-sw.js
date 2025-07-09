@@ -17,7 +17,7 @@ self.addEventListener('push', (event) => {
     const options = {
       body:  data.notification?.body,
       icon:  data.notification?.image,
-      badge: data.notification?.badge,
+      badge: data.notification?.image,
       image: data.notification?.image,
       
       data: {
