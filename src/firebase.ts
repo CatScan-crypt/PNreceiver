@@ -21,6 +21,25 @@ console.log('Firebase app initialized:', app.name);
 const messaging = getMessaging(app);
 console.log('Firebase messaging initialized:', messaging);
 
+export const checkNotificationRegistration = async (): Promise<boolean> => {
+  try {
+    // Check if service worker is registered
+    const registration = await navigator.serviceWorker.getRegistration();
+    if (!registration) return false;
+
+    // Check if we have a valid FCM token
+    const token = await getToken(messaging, {
+      vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
+      serviceWorkerRegistration: registration
+    });
+
+    return !!token;
+  } catch (error) {
+    console.error('Error checking notification registration:', error);
+    return false;
+  }
+};
+
 export const requestPermission = async () => {
   try {
     console.log('Requesting notification permission...');
@@ -29,12 +48,16 @@ export const requestPermission = async () => {
 
     if (permission === 'granted') {
       console.log('Registering service worker for FCM...');
-      const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+      const registration = await navigator.serviceWorker.register('/custom-sw.js');
       console.log('Service worker registered:', registration);
       
-      // Get FCM token
+      // Wait for the Service Worker to be active
+      await navigator.serviceWorker.ready;
+
+      // Get FCM token using the registration
       const token = await getToken(messaging, {
-        vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY
+        vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
+        serviceWorkerRegistration: registration
       });
       console.log('FCM Token:', token);
       
@@ -62,3 +85,5 @@ export const requestPermission = async () => {
 };
 
 export const onMessageListener = (callback: (payload: MessagePayload) => void) => onMessage(messaging, callback);
+
+

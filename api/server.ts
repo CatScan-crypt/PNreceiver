@@ -2,7 +2,7 @@ import express, { type Request, type Response } from 'express';
 import { connectToRedis, redisClient } from './redis.js';
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3002;
 
 // Add JSON parsing middleware
 app.use(express.json());
