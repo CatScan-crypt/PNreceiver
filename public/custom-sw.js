@@ -10,14 +10,15 @@ self.addEventListener('push', (event) => {
       data = {
         title: 'New Notification',
         body: event.data.text(),
-        image: event.data.image
+        image: event.data.image,
+        // badge:  '/icon.png',
       };
     } 
     console.log(":asf", data)
     const options = {
       body:  data.notification?.body,
       icon:  data.notification?.image,
-      badge: data.notification?.image,
+      badge:  '/icon.png',
       image: data.notification?.image,
       
       data: {
