@@ -11,14 +11,14 @@ self.addEventListener('push', (event) => {
         title: 'New Notification',
         body: event.data.text(),
         image: event.data.image,
-        // badge:  '/icon.png',
+        badge:  '/icon.svg',
       };
     } 
     console.log(":asf", data)
     const options = {
       body:  data.notification?.body,
       icon:  data.notification?.image,
-      badge:  '/icon.png',
+      badge:  data.notification?.badge,
       image: data.notification?.image,
       
       data: {
